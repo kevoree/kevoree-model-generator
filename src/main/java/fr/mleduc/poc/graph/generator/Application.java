@@ -15,11 +15,6 @@ public class Application {
 
     public static void main(String[] args) {
 
-        /*
-         * TODO :
-         * Comment attacher les inputs/outputs aux channels de manière uniforme ?
-         * Comment spécifier efficassement la configuration des channels / groupes a la génération.
-         */
 
         long seed = initSeed(args);
 

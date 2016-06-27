@@ -23,6 +23,12 @@ public class GraphService {
     private Graph graph;
     private ChannelSettings channelSettings = new ChannelSettings();
 
+    public GraphService() {
+        this.generator = new Random();
+        this.typeDefService = new TypeDefService(generator);
+        this.graph = new Graph(generator);
+    }
+
     public GraphService(final Random generator) {
         this.generator = generator;
         this.typeDefService = new TypeDefService(generator);
