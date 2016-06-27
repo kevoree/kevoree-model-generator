@@ -4,6 +4,11 @@ This project help creating massive model composed of hundreds of instances with 
 ## Usage
 The generation can be determinist by defining the seed used to initialise the random numbe
 
+## TODO
+
+  * Export directly as a kevoree model
+  * Alter a model
+
 ## Limitations
 This is a first version of the tool.
 
