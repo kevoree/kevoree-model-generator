@@ -3,7 +3,7 @@ package fr.mleduc.poc.graph.generator;
 import fr.mleduc.poc.graph.generator.graph.Graph;
 import fr.mleduc.poc.graph.generator.graph.settings.ChannelSettings;
 import fr.mleduc.poc.graph.generator.service.GraphService;
-import fr.mleduc.poc.graph.generator.service.KevPrinterService;
+import fr.mleduc.poc.graph.generator.service.output.KevPrinterService;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Random;

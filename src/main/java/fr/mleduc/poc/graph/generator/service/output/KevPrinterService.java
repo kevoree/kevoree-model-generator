@@ -1,4 +1,4 @@
-package fr.mleduc.poc.graph.generator.service;
+package fr.mleduc.poc.graph.generator.service.output;
 
 import fr.mleduc.poc.graph.generator.graph.Chan;
 import fr.mleduc.poc.graph.generator.graph.Component;
