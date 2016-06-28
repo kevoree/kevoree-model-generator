@@ -1,9 +1,10 @@
 package fr.mleduc.poc.graph.generator.service;
 
-import fr.mleduc.poc.graph.generator.graph.Chan;
-import fr.mleduc.poc.graph.generator.graph.Component;
 import fr.mleduc.poc.graph.generator.graph.Graph;
-import fr.mleduc.poc.graph.generator.graph.Node;
+import fr.mleduc.poc.graph.generator.graph.instance.Chan;
+import fr.mleduc.poc.graph.generator.graph.instance.Component;
+import fr.mleduc.poc.graph.generator.graph.instance.Group;
+import fr.mleduc.poc.graph.generator.graph.instance.Node;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,7 +21,8 @@ public class GraphService {
 	private int nodes = 1;
 	private int components = 1;
 	private int channels = 1;
-	private Graph graph;
+	private final Graph graph;
+	private int groups = 1;
 
 	public GraphService() {
 		this.generator = new Random();
@@ -34,19 +36,28 @@ public class GraphService {
 		this.graph = new Graph(generator);
 	}
 
-	public GraphService withNodes(int nodes) {
+	public GraphService withNodes(final int nodes) {
 		this.nodes = nodes;
 		return this;
 	}
 
-	public GraphService withComponents(int components) {
+	public GraphService withComponents(final int components) {
 		this.components = components;
 		return this;
 	}
 
 	public GraphService generate() {
-		IntStream.range(0, nodes)
-				.forEach(value -> graph.addNode(new Node("node" + value, typeDefService.getRandomNode())));
+
+		IntStream.range(0, groups)
+				.forEach(value -> graph.addGroup(new Group("group" + value, typeDefService.getRandomGroup())));
+
+		IntStream.range(0, nodes).forEach(value -> {
+			final Node node = new Node("node" + value, typeDefService.getRandomNode());
+			graph.addNode(node);
+			final Group group = graph.getRandomGroup();
+			graph.addNodeToGroup(group, node, new HashMap<>(group.getTypeDef().getDefaultFragmentDictionary()));
+
+		});
 
 		IntStream.range(0, components).forEach(value -> {
 			final Node node = graph.getRandomNode();
@@ -82,7 +93,7 @@ public class GraphService {
 		return this;
 	}
 
-	private void randomlyBind(Component component, String input) {
+	private void randomlyBind(final Component component, final String input) {
 		for (int i = 1;; i++) {
 			final float level = generator.nextFloat();
 			if (level < activationFunction(i)) {
@@ -94,8 +105,8 @@ public class GraphService {
 		}
 	}
 
-	private float activationFunction(int j) {
-		float i = j;
+	private float activationFunction(final int j) {
+		final float i = j;
 		return 1.0f / (i * i + 1.0f);
 	}
 
@@ -103,8 +114,13 @@ public class GraphService {
 		return this.graph;
 	}
 
-	public GraphService withChannels(int channels) {
+	public GraphService withChannels(final int channels) {
 		this.channels = channels;
+		return this;
+	}
+
+	public GraphService withGroups(final int groups) {
+		this.groups = groups;
 		return this;
 	}
 

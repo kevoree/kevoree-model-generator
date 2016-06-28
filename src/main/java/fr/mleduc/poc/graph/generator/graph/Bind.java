@@ -1,5 +1,8 @@
 package fr.mleduc.poc.graph.generator.graph;
 
+import fr.mleduc.poc.graph.generator.graph.instance.Chan;
+import fr.mleduc.poc.graph.generator.graph.instance.Component;
+
 /**
  * Created by mleduc on 27/06/16.
  */

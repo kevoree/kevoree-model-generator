@@ -1,4 +1,6 @@
-package fr.mleduc.poc.graph.generator.graph;
+package fr.mleduc.poc.graph.generator.graph.instance;
+
+import fr.mleduc.poc.graph.generator.graph.typedef.TypeDef;
 
 /**
  * Created by mleduc on 27/06/16.

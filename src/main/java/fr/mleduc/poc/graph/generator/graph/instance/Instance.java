@@ -1,4 +1,4 @@
-package fr.mleduc.poc.graph.generator.graph;
+package fr.mleduc.poc.graph.generator.graph.instance;
 
 import java.util.Map;
 

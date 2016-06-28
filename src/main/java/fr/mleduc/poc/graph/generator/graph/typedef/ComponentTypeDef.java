@@ -1,4 +1,4 @@
-package fr.mleduc.poc.graph.generator.graph;
+package fr.mleduc.poc.graph.generator.graph.typedef;
 
 import java.util.ArrayList;
 import java.util.List;

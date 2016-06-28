@@ -28,7 +28,7 @@ public class Application {
 		final Random generator = new Random();
 		generator.setSeed(seed);
 
-		final GraphService graphService = new GraphService(generator).withNodes(3).withComponents(6).withChannels(3);
+		final GraphService graphService = new GraphService(generator).withNodes(3).withComponents(6).withChannels(3).withGroups(1);
 
 		final Graph graph = graphService.generate().getGraph();
 

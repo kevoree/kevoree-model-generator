@@ -20,9 +20,9 @@ import org.kevoree.factory.DefaultKevoreeFactory;
 import org.kevoree.factory.KevoreeFactory;
 import org.kevoree.pmodeling.api.json.JSONModelSerializer;
 
-import fr.mleduc.poc.graph.generator.graph.Chan;
-import fr.mleduc.poc.graph.generator.graph.Component;
 import fr.mleduc.poc.graph.generator.graph.Graph;
+import fr.mleduc.poc.graph.generator.graph.instance.Chan;
+import fr.mleduc.poc.graph.generator.graph.instance.Component;
 import fr.mleduc.poc.graph.generator.registry.KevoreeRegistryResolver;
 import fr.mleduc.poc.graph.generator.registry.TypeDefinitionResolver;
 import fr.mleduc.poc.graph.generator.registry.TypeFQN;
@@ -102,7 +102,7 @@ public class KevoreeModelService {
 
 	}
 
-	private void attachPort(ContainerRoot root, final KevoreeFactory kevoreeFactory, Channel channelInstance,
+	private void attachPort(final ContainerRoot root, final KevoreeFactory kevoreeFactory, final Channel channelInstance,
 			final Port port) {
 		final MBinding mBinding = kevoreeFactory.createMBinding();
 		mBinding.setPort(port);
