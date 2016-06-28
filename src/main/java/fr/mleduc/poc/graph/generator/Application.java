@@ -11,7 +11,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import fr.mleduc.poc.graph.generator.graph.Graph;
-import fr.mleduc.poc.graph.generator.graph.settings.ChannelSettings;
 import fr.mleduc.poc.graph.generator.service.GraphService;
 import fr.mleduc.poc.graph.generator.service.output.KevPrinterService;
 import fr.mleduc.poc.graph.generator.service.output.KevoreeModelService;
@@ -21,42 +20,41 @@ import fr.mleduc.poc.graph.generator.service.output.KevoreeModelService;
  */
 public class Application {
 
-    public static void main(final String[] args) throws FileNotFoundException, IOException {
+	public static void main(final String[] args) throws FileNotFoundException, IOException {
 
-        // long seed = 3197945307415816667L;
-        final long seed = initSeed(args);
+		final long seed = -3309530520489196191L;
+		// final long seed = initSeed(args);
 
-        final Random generator = new Random();
-        generator.setSeed(seed);
+		final Random generator = new Random();
+		generator.setSeed(seed);
 
-        final GraphService graphService = new GraphService(generator).withNodes(2).withComponents(3).withChannels(250)
-                .withChannelSettings(new ChannelSettings("ws.kevoree.org", "benchmark", 80));
+		final GraphService graphService = new GraphService(generator).withNodes(3).withComponents(6).withChannels(3);
 
-        final Graph graph = graphService.generate().getGraph();
+		final Graph graph = graphService.generate().getGraph();
 
-        final String model = new KevoreeModelService().process(graph);
-        IOUtils.write(model, new FileOutputStream(new File("model.json")), Charset.defaultCharset());
-        System.out.println("Model saved in model.json");
+		final String model = new KevoreeModelService().process(graph);
+		IOUtils.write(model, new FileOutputStream(new File("model.json")), Charset.defaultCharset());
+		System.out.println("Model saved in model.json");
 
-        final String kevs = new KevPrinterService().process(graph);
-        System.out.println(kevs);
-    }
+		final String kevs = new KevPrinterService().process(graph);
+		System.out.println(kevs);
+	}
 
-    private static long initSeed(final String[] args) {
-        long seed;
-        if (args.length > 0 && StringUtils.isNotBlank(args[0])) {
-            try {
-                seed = Long.parseLong(args[0]);
-                System.out.println("Using user defined " + seed + " as the random generator seed");
-            } catch (final NumberFormatException e) {
-                seed = -1;
-                System.out.println("User defined seed " + args[0] + "is not a valid long");
-                System.exit(-1);
-            }
-        } else {
-            seed = new Random().nextLong();
-            System.out.println("Using randomly generated " + seed + " as the random generator seed");
-        }
-        return seed;
-    }
+	private static long initSeed(final String[] args) {
+		long seed;
+		if ((args.length > 0) && StringUtils.isNotBlank(args[0])) {
+			try {
+				seed = Long.parseLong(args[0]);
+				System.out.println("Using user defined " + seed + " as the random generator seed");
+			} catch (final NumberFormatException e) {
+				seed = -1;
+				System.out.println("User defined seed " + args[0] + "is not a valid long");
+				System.exit(-1);
+			}
+		} else {
+			seed = new Random().nextLong();
+			System.out.println("Using randomly generated " + seed + " as the random generator seed");
+		}
+		return seed;
+	}
 }

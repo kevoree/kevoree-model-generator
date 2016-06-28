@@ -14,41 +14,52 @@ import java.util.Random;
  */
 public class TypeDefService {
 
-    private final List<ComponentTypeDef> components = new ArrayList<>();
-    private final List<TypeDef> nodes = new ArrayList<>();
+	private final List<ComponentTypeDef> components = new ArrayList<>();
+	private final List<TypeDef> nodes = new ArrayList<>();
+	private final List<TypeDef> chans = new ArrayList<>();
 
-    private final Random generator;
+	private final Random generator;
 
-    public TypeDefService(final Random generator) {
-        this.generator = generator;
-        final List<String> outputsTicker = new ArrayList<>();
-        outputsTicker.add("tick");
-        final Map<String, String> tickerDefaultDictionary = new HashMap<>();
-        tickerDefaultDictionary.put("period", "3000");
-        tickerDefaultDictionary.put("random", "false");
-        components.add(new ComponentTypeDef("Ticker", tickerDefaultDictionary, null, outputsTicker));
-        List<String> inputsConsole = new ArrayList<>();
-        inputsConsole.add("input");
-        components.add(new ComponentTypeDef("ConsolePrinter", new HashMap<>(), inputsConsole, null));
+	public TypeDefService(final Random generator) {
+		this.generator = generator;
+		final List<String> outputsTicker = new ArrayList<>();
+		outputsTicker.add("tick");
+		final Map<String, String> tickerDefaultDictionary = new HashMap<>();
+		tickerDefaultDictionary.put("period", "3000");
+		tickerDefaultDictionary.put("random", "false");
+		components.add(new ComponentTypeDef("Ticker", tickerDefaultDictionary, null, outputsTicker));
+		final List<String> inputsConsole = new ArrayList<>();
+		inputsConsole.add("input");
+		components.add(new ComponentTypeDef("ConsolePrinter", new HashMap<>(), inputsConsole, null));
 
-        HashMap<String, String> javaNodeDefaultDictionary = new HashMap<>();
-        javaNodeDefaultDictionary.put("jvmArgs", "");
-        javaNodeDefaultDictionary.put("log", "INFO");
-        nodes.add(new TypeDef("JavaNode", javaNodeDefaultDictionary));
-        Map<String, String> javascriptNodeDefaultDictionary = new HashMap<>();
-        javascriptNodeDefaultDictionary.put("logLevel", "DEBUG");
-        nodes.add(new TypeDef("JavascriptNode", javascriptNodeDefaultDictionary));
-    }
+		final HashMap<String, String> javaNodeDefaultDictionary = new HashMap<>();
+		javaNodeDefaultDictionary.put("jvmArgs", "");
+		javaNodeDefaultDictionary.put("log", "INFO");
+		nodes.add(new TypeDef("JavaNode", javaNodeDefaultDictionary));
+		final Map<String, String> javascriptNodeDefaultDictionary = new HashMap<>();
+		javascriptNodeDefaultDictionary.put("logLevel", "INFO");
+		nodes.add(new TypeDef("JavascriptNode", javascriptNodeDefaultDictionary));
 
-    public ComponentTypeDef getRandomComponent() {
-        return getRandomOnList(this.components);
-    }
+		final Map<String, String> wsChanDefaultDictionary = new HashMap<>();
+		wsChanDefaultDictionary.put("host", "ws.kevoree.org");
+		wsChanDefaultDictionary.put("port", "80");
+		wsChanDefaultDictionary.put("path", "benchmark");
+		chans.add(new TypeDef("WSChan", wsChanDefaultDictionary));
+	}
 
-    public TypeDef getRandomNode() {
-        return getRandomOnList(this.nodes);
-    }
+	public ComponentTypeDef getRandomComponent() {
+		return getRandomOnList(this.components);
+	}
 
-    private <T extends TypeDef> T getRandomOnList(List<T> components1) {
-        return components1.get(generator.nextInt(components1.size()));
-    }
+	public TypeDef getRandomNode() {
+		return getRandomOnList(this.nodes);
+	}
+
+	private <T extends TypeDef> T getRandomOnList(final List<T> components1) {
+		return components1.get(generator.nextInt(components1.size()));
+	}
+
+	public TypeDef getRandomChan() {
+		return getRandomOnList(this.chans);
+	}
 }

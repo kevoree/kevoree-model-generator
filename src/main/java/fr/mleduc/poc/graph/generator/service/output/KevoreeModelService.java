@@ -4,20 +4,23 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import org.kevoree.Channel;
 import org.kevoree.ComponentInstance;
 import org.kevoree.ContainerNode;
 import org.kevoree.ContainerRoot;
 import org.kevoree.Dictionary;
 import org.kevoree.Instance;
+import org.kevoree.MBinding;
+import org.kevoree.Port;
 import org.kevoree.TypeDefinition;
 import org.kevoree.Value;
 import org.kevoree.factory.DefaultKevoreeFactory;
 import org.kevoree.factory.KevoreeFactory;
 import org.kevoree.pmodeling.api.json.JSONModelSerializer;
 
+import fr.mleduc.poc.graph.generator.graph.Chan;
 import fr.mleduc.poc.graph.generator.graph.Component;
 import fr.mleduc.poc.graph.generator.graph.Graph;
 import fr.mleduc.poc.graph.generator.registry.KevoreeRegistryResolver;
@@ -29,91 +32,164 @@ import fr.mleduc.poc.graph.generator.registry.TypeFQN;
  */
 public class KevoreeModelService {
 
-    private final KevoreeRegistryResolver kevoreeRegistryResolver = new KevoreeRegistryResolver();
+	private final KevoreeRegistryResolver kevoreeRegistryResolver = new KevoreeRegistryResolver();
 
-    public String process(final Graph graph) {
-        final KevoreeFactory kevoreeFactory = new DefaultKevoreeFactory();
-        final ContainerRoot root = kevoreeFactory.createContainerRoot();
-        kevoreeFactory.root(root);
+	public String process(final Graph graph) {
+		final KevoreeFactory kevoreeFactory = new DefaultKevoreeFactory();
+		final ContainerRoot root = kevoreeFactory.createContainerRoot();
+		kevoreeFactory.root(root);
 
-        initNodes(graph, kevoreeFactory, root);
-        initComponents(graph, kevoreeFactory, root);
+		initNodes(graph, kevoreeFactory, root);
+		initComponents(graph, kevoreeFactory, root);
+		initChans(graph, kevoreeFactory, root);
 
-        final JSONModelSerializer jsonSerializer = kevoreeFactory.createJSONSerializer();
-        return jsonSerializer.serialize(root);
-    }
+		final JSONModelSerializer jsonSerializer = kevoreeFactory.createJSONSerializer();
+		return jsonSerializer.serialize(root);
+	}
 
-    private void initComponents(final Graph graph, final KevoreeFactory kevoreeFactory, final ContainerRoot root) {
-        graph.getComponents().stream().forEach(new Consumer<Component>() {
+	private void initChans(final Graph graph, final KevoreeFactory kevoreeFactory, final ContainerRoot root) {
+		graph.getChans().stream().forEach(chan -> {
+			final Channel channelInstance = kevoreeFactory.createChannel();
+			channelInstance.setStarted(true);
+			channelInstance.setName(chan.getName());
+			final String typeDefName = chan.getTypeDef().getName();
+			final TypeDefinition componentTypeDefinition = resolveTypeDef(kevoreeFactory, root, typeDefName);
+			channelInstance.setTypeDefinition(componentTypeDefinition);
+			defineDictionary(kevoreeFactory, chan.getDictionary(), channelInstance);
+			root.addHubs(channelInstance);
+		});
 
-            @Override
-            public void accept(final Component component) {
-                root.getNodes().stream().filter(t -> Objects.equals(t.getName(), component.getNode().getName()))
-                        .findFirst().ifPresent(new Consumer<ContainerNode>() {
+		graph.getBinds().forEach(bind -> {
+			final Chan chan = bind.getChan();
+			final Component component = bind.getComponent();
 
-                    @Override
-                    public void accept(final ContainerNode node) {
-                        final ComponentInstance componentInstance = kevoreeFactory.createComponentInstance();
-                        componentInstance.setName(component.getName());
+			root.getHubs().stream().filter(channelInstance -> Objects.equals(channelInstance.getName(), chan.getName()))
+					.findFirst().ifPresent(channelInstance -> {
+						root.getNodes().stream().filter(containerNode1 -> Objects.equals(containerNode1.getName(),
+								component.getNode().getName())).findFirst().ifPresent(containerNode2 -> {
+									containerNode2.getComponents()
+											.stream().filter(componentInstance -> Objects
+													.equals(componentInstance.getName(), component.getName()))
+											.findFirst().ifPresent(componentInstance -> {
 
-                        final String typeDefName = component.getTypeDef().getName();
-                        final TypeDefinition componentTypeDefinition = resolveTypeDef(kevoreeFactory, root,
-                                typeDefName);
+												/*
+												 * warning : currently a
+												 * conflict can arise if a DU
+												 * with an input port and and
+												 * output port with the similar
+												 * names is used during the
+												 * generation (only the provided
+												 * port will be used).
+												 */
+												final Port providedPort = componentInstance
+														.findProvidedByID(bind.getPort());
+												if (providedPort != null) {
+													attachPort(root, kevoreeFactory, channelInstance, providedPort);
+												} else {
+													final Port requiredPort = componentInstance
+															.findRequiredByID(bind.getPort());
+													if (requiredPort != null) {
+														attachPort(root, kevoreeFactory, channelInstance, requiredPort);
+													}
+												}
+											});
 
-                        componentInstance.setTypeDefinition(componentTypeDefinition);
+								});
+						;
+					});
 
-                        defineDictionary(kevoreeFactory, component.getDictionary(), componentInstance);
-                        node.addComponents(componentInstance);
-                    }
-                });
-                ;
+		});
 
-            }
-        });
-    }
+	}
 
-    private void initNodes(final Graph graph, final KevoreeFactory kevoreeFactory, final ContainerRoot root) {
-        final List<ContainerNode> nodes = graph.getNodes().stream().map(node -> {
-            final ContainerNode containerNode = kevoreeFactory.createContainerNode();
+	private void attachPort(ContainerRoot root, final KevoreeFactory kevoreeFactory, Channel channelInstance,
+			final Port port) {
+		final MBinding mBinding = kevoreeFactory.createMBinding();
+		mBinding.setPort(port);
+		mBinding.setHub(channelInstance);
+		port.getBindings().add(mBinding);
+		channelInstance.getBindings().add(mBinding);
+		root.addMBindings(mBinding);
+	}
 
-            final String typeDefName = node.getTypeDef().getName();
-            final TypeDefinition nodeTypeDefinition = resolveTypeDef(kevoreeFactory, root, typeDefName);
+	private void initComponents(final Graph graph, final KevoreeFactory kevoreeFactory, final ContainerRoot root) {
+		graph.getComponents().stream().forEach(component -> {
+			root.getNodes().stream().filter(t -> Objects.equals(t.getName(), component.getNode().getName())).findFirst()
+					.ifPresent(node -> {
+						final ComponentInstance componentInstance = kevoreeFactory.createComponentInstance();
+						componentInstance.setStarted(true);
+						componentInstance.setName(component.getName());
 
-            containerNode.setName(node.getName());
-            containerNode.setStarted(true);
-            containerNode.setTypeDefinition(nodeTypeDefinition);
+						final String typeDefName = component.getTypeDef().getName();
+						final TypeDefinition componentTypeDefinition = resolveTypeDef(kevoreeFactory, root,
+								typeDefName);
 
-            defineDictionary(kevoreeFactory, node.getDictionary(), containerNode);
+						componentInstance.setTypeDefinition(componentTypeDefinition);
 
-            return containerNode;
-        }).collect(Collectors.toList());
-        root.addAllNodes(nodes);
+						defineDictionary(kevoreeFactory, component.getDictionary(), componentInstance);
 
-    }
+						componentInstance.addAllRequired(component.getTypeDef().getOutputs().stream().map(portName -> {
+							final Port port = kevoreeFactory.createPort();
+							port.setName(portName);
+							port.setBindings(new ArrayList<>());
+							return port;
+						}).collect(Collectors.toList()));
 
-    private TypeDefinition resolveTypeDef(final KevoreeFactory kevoreeFactory, final ContainerRoot root,
-            final String typeDefName) {
-        try {
-            final List<TypeFQN> fqns = new ArrayList<>();
-            fqns.add(new TypeFQN(typeDefName));
-            kevoreeRegistryResolver.resolve(fqns, root, kevoreeFactory);
-        } catch (final Exception e) {
-            e.printStackTrace();
-        }
-        final TypeDefinition nodeTypeDefinition = TypeDefinitionResolver.resolve(root, null, typeDefName, null);
-        return nodeTypeDefinition;
-    }
+						componentInstance.addAllProvided(component.getTypeDef().getInputs().stream().map(portName -> {
+							final Port port = kevoreeFactory.createPort();
+							port.setName(portName);
+							port.setBindings(new ArrayList<>());
+							return port;
+						}).collect(Collectors.toList()));
 
-    private void defineDictionary(final KevoreeFactory kevoreeFactory, final Map<String, String> refDictionary,
-            final Instance containerNode) {
-        final Dictionary dictionary = kevoreeFactory.createDictionary();
+						node.addComponents(componentInstance);
+					});
 
-        dictionary.setValues(refDictionary.entrySet().stream().map(entry -> {
-            final Value value = kevoreeFactory.createValue();
-            value.setName(entry.getKey());
-            value.setValue(entry.getValue());
-            return value;
-        }).collect(Collectors.toList()));
-        containerNode.setDictionary(dictionary);
-    }
+		});
+	}
+
+	private void initNodes(final Graph graph, final KevoreeFactory kevoreeFactory, final ContainerRoot root) {
+		final List<ContainerNode> nodes = graph.getNodes().stream().map(node -> {
+			final ContainerNode containerNode = kevoreeFactory.createContainerNode();
+
+			final String typeDefName = node.getTypeDef().getName();
+			final TypeDefinition nodeTypeDefinition = resolveTypeDef(kevoreeFactory, root, typeDefName);
+
+			containerNode.setName(node.getName());
+			containerNode.setStarted(true);
+			containerNode.setTypeDefinition(nodeTypeDefinition);
+
+			defineDictionary(kevoreeFactory, node.getDictionary(), containerNode);
+
+			return containerNode;
+		}).collect(Collectors.toList());
+		root.addAllNodes(nodes);
+
+	}
+
+	private TypeDefinition resolveTypeDef(final KevoreeFactory kevoreeFactory, final ContainerRoot root,
+			final String typeDefName) {
+		try {
+			final List<TypeFQN> fqns = new ArrayList<>();
+			fqns.add(new TypeFQN(typeDefName));
+			kevoreeRegistryResolver.resolve(fqns, root, kevoreeFactory);
+		} catch (final Exception e) {
+			e.printStackTrace();
+		}
+		final TypeDefinition nodeTypeDefinition = TypeDefinitionResolver.resolve(root, null, typeDefName, null);
+		return nodeTypeDefinition;
+	}
+
+	private void defineDictionary(final KevoreeFactory kevoreeFactory, final Map<String, String> refDictionary,
+			final Instance containerNode) {
+		final Dictionary dictionary = kevoreeFactory.createDictionary();
+
+		dictionary.setValues(refDictionary.entrySet().stream().map(entry -> {
+			final Value value = kevoreeFactory.createValue();
+			value.setName(entry.getKey());
+			value.setValue(entry.getValue());
+			return value;
+		}).collect(Collectors.toList()));
+		containerNode.setDictionary(dictionary);
+	}
 }
