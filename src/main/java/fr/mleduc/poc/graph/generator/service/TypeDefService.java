@@ -4,7 +4,9 @@ import fr.mleduc.poc.graph.generator.graph.ComponentTypeDef;
 import fr.mleduc.poc.graph.generator.graph.TypeDef;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 /**
@@ -21,15 +23,22 @@ public class TypeDefService {
         this.generator = generator;
         final List<String> outputsTicker = new ArrayList<>();
         outputsTicker.add("tick");
-        components.add(new ComponentTypeDef("Ticker", null, outputsTicker));
+        final Map<String, String> tickerDefaultDictionary = new HashMap<>();
+        tickerDefaultDictionary.put("period", "3000");
+        tickerDefaultDictionary.put("random", "false");
+        components.add(new ComponentTypeDef("Ticker", tickerDefaultDictionary, null, outputsTicker));
         List<String> inputsConsole = new ArrayList<>();
         inputsConsole.add("input");
-        components.add(new ComponentTypeDef("ConsolePrinter", inputsConsole, null));
+        components.add(new ComponentTypeDef("ConsolePrinter", new HashMap<>(), inputsConsole, null));
 
-        nodes.add(new TypeDef("JavaNode"));
-        nodes.add(new TypeDef("JavascriptNode"));
+        HashMap<String, String> javaNodeDefaultDictionary = new HashMap<>();
+        javaNodeDefaultDictionary.put("jvmArgs", "");
+        javaNodeDefaultDictionary.put("log", "INFO");
+        nodes.add(new TypeDef("JavaNode", javaNodeDefaultDictionary));
+        Map<String, String> javascriptNodeDefaultDictionary = new HashMap<>();
+        javascriptNodeDefaultDictionary.put("logLevel", "DEBUG");
+        nodes.add(new TypeDef("JavascriptNode", javascriptNodeDefaultDictionary));
     }
-
 
     public ComponentTypeDef getRandomComponent() {
         return getRandomOnList(this.components);

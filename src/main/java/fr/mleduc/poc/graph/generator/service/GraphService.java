@@ -14,7 +14,6 @@ import java.util.stream.IntStream;
  */
 public class GraphService {
 
-
     private final Random generator;
     private final TypeDefService typeDefService;
     private int nodes = 1;
@@ -46,7 +45,8 @@ public class GraphService {
     }
 
     public GraphService generate() {
-        IntStream.range(0, nodes).forEach(value -> graph.addNode(new Node("node" + value, typeDefService.getRandomNode())));
+        IntStream.range(0, nodes)
+                .forEach(value -> graph.addNode(new Node("node" + value, typeDefService.getRandomNode())));
 
         IntStream.range(0, components).forEach(value -> {
             final Node node = graph.getRandomNode();
@@ -56,10 +56,10 @@ public class GraphService {
 
         IntStream.range(0, channels).forEach(value -> {
             final String chanId = "chan" + value;
-            final Chan chan = new Chan(chanId, new ChannelSettings(channelSettings.getHost(), channelSettings.getPath() + "_" + chanId, channelSettings.getPort()));
+            final Chan chan = new Chan(chanId, new ChannelSettings(channelSettings.getHost(),
+                    channelSettings.getPath() + "_" + chanId, channelSettings.getPort()));
             graph.addChan(chan);
         });
-
 
         graph.getComponents().stream().forEach(component -> {
             for (final String port : component.getTypeDef().getInputs()) {
@@ -75,7 +75,7 @@ public class GraphService {
     }
 
     private void randomlyBind(Component component, String input) {
-        for (int i = 1; ; i++) {
+        for (int i = 1;; i++) {
             final float level = generator.nextFloat();
             if (level < activationFunction(i)) {
                 final Chan chan = graph.getRandomChan();
