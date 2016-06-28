@@ -9,6 +9,8 @@ import java.util.Random;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.kevoree.ContainerRoot;
+import org.kevoree.factory.DefaultKevoreeFactory;
 
 import fr.mleduc.poc.graph.generator.graph.Graph;
 import fr.mleduc.poc.graph.generator.service.GraphService;
@@ -34,8 +36,10 @@ public class Application {
 
 		final Graph graph = graphService.generate().getGraph();
 
-		final String model = new KevoreeModelService().process(graph);
-		IOUtils.write(model, new FileOutputStream(new File("model.json")), Charset.defaultCharset());
+		final ContainerRoot model = new KevoreeModelService().process(graph);
+
+		IOUtils.write(new DefaultKevoreeFactory().createJSONSerializer().serialize(model),
+				new FileOutputStream(new File("model.json")), Charset.defaultCharset());
 		System.out.println("Model saved in model.json");
 
 		final String kevs = new KevPrinterService().process(graph);

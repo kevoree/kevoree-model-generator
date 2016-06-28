@@ -20,7 +20,6 @@ import org.kevoree.TypeDefinition;
 import org.kevoree.Value;
 import org.kevoree.factory.DefaultKevoreeFactory;
 import org.kevoree.factory.KevoreeFactory;
-import org.kevoree.pmodeling.api.json.JSONModelSerializer;
 
 import fr.mleduc.poc.graph.generator.graph.Graph;
 import fr.mleduc.poc.graph.generator.graph.instance.Chan;
@@ -36,7 +35,7 @@ public class KevoreeModelService {
 
 	private final KevoreeRegistryResolver kevoreeRegistryResolver = new KevoreeRegistryResolver();
 
-	public String process(final Graph graph) {
+	public ContainerRoot process(final Graph graph) {
 		final KevoreeFactory kevoreeFactory = new DefaultKevoreeFactory();
 		final ContainerRoot root = kevoreeFactory.createContainerRoot();
 		kevoreeFactory.root(root);
@@ -46,8 +45,7 @@ public class KevoreeModelService {
 		initComponents(graph, kevoreeFactory, root);
 		initChans(graph, kevoreeFactory, root);
 
-		final JSONModelSerializer jsonSerializer = kevoreeFactory.createJSONSerializer();
-		return jsonSerializer.serialize(root);
+		return root;
 	}
 
 	private void initGroups(final Graph graph, final KevoreeFactory kevoreeFactory, final ContainerRoot root) {
