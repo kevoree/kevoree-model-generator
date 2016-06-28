@@ -2,22 +2,21 @@
 This project help creating massive model composed of hundreds of instances with just a few lines on configuration
 
 ## Usage
-The generation can be determinist by defining the seed used to initialise the random numbe
+The generation can be deterministic by defining the seed used to initialize the random number.
 
 ## TODO
 
-  * Export directly as a kevoree model
   * Alter a model
 
 ## Limitations
 This is a first version of the tool.
 
-It allows only the initialisation of :
+It allows only the initialization of :
  * nodes :
    * JavaNode
    * JavascriptNode
- * groups : none (TODO)
- * chans :
+ * groups : WSGroup (master = node0, port = 9000)
+ * channels :
    * WSChan
  * components :
    * Ticker
@@ -36,7 +35,7 @@ public class Application {
                 .withNodes(5)
                 .withComponents(3)
                 .withChannels(2)
-                .withChannelSettings(new ChannelSettings("ws.kevoree.org", "small_model", 80));
+                .withGroups(1);
 
         final Graph graph = graphService.generate().getGraph();
 
