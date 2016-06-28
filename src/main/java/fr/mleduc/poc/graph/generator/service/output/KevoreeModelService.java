@@ -11,6 +11,8 @@ import org.kevoree.ComponentInstance;
 import org.kevoree.ContainerNode;
 import org.kevoree.ContainerRoot;
 import org.kevoree.Dictionary;
+import org.kevoree.FragmentDictionary;
+import org.kevoree.Group;
 import org.kevoree.Instance;
 import org.kevoree.MBinding;
 import org.kevoree.Port;
@@ -40,6 +42,7 @@ public class KevoreeModelService {
 		kevoreeFactory.root(root);
 
 		initNodes(graph, kevoreeFactory, root);
+		initGroups(graph, kevoreeFactory, root);
 		initComponents(graph, kevoreeFactory, root);
 		initChans(graph, kevoreeFactory, root);
 
@@ -47,13 +50,49 @@ public class KevoreeModelService {
 		return jsonSerializer.serialize(root);
 	}
 
+	private void initGroups(final Graph graph, final KevoreeFactory kevoreeFactory, final ContainerRoot root) {
+		graph.getGroups().stream().forEach(group -> {
+			final Group groupInstance = kevoreeFactory.createGroup();
+			groupInstance.setStarted(true);
+			groupInstance.setName(group.getName());
+			groupInstance.addAllSubNodes(root.getNodes().stream()
+					.filter(node -> groupContainsNode(node.getName(), group)).collect(Collectors.toList()));
+
+			final TypeDefinition componentTypeDefinition = resolveTypeDef(kevoreeFactory, root,
+					group.getTypeDef().getName());
+			groupInstance.setTypeDefinition(componentTypeDefinition);
+
+			defineDictionary(kevoreeFactory, group.getDictionary(), groupInstance);
+
+			root.addGroups(groupInstance);
+			group.getNodes().stream().forEach(node -> {
+				final FragmentDictionary fragmentDictionary = kevoreeFactory.createFragmentDictionary();
+				fragmentDictionary.setName(node.getName());
+				group.getNodeFragment(node.getName()).entrySet().stream().forEach(entry -> {
+					final Value value = kevoreeFactory.createValue();
+					value.setName(entry.getKey());
+					value.setValue(entry.getValue());
+					fragmentDictionary.addValues(value);
+				});
+				groupInstance.addFragmentDictionary(fragmentDictionary);
+			});
+
+		});
+
+	}
+
+	private boolean groupContainsNode(final String nodeName,
+			final fr.mleduc.poc.graph.generator.graph.instance.Group group) {
+		return group.getNodes().stream().anyMatch(groupNode -> Objects.equals(groupNode.getName(), nodeName));
+	}
+
 	private void initChans(final Graph graph, final KevoreeFactory kevoreeFactory, final ContainerRoot root) {
 		graph.getChans().stream().forEach(chan -> {
 			final Channel channelInstance = kevoreeFactory.createChannel();
 			channelInstance.setStarted(true);
 			channelInstance.setName(chan.getName());
-			final String typeDefName = chan.getTypeDef().getName();
-			final TypeDefinition componentTypeDefinition = resolveTypeDef(kevoreeFactory, root, typeDefName);
+			final TypeDefinition componentTypeDefinition = resolveTypeDef(kevoreeFactory, root,
+					chan.getTypeDef().getName());
 			channelInstance.setTypeDefinition(componentTypeDefinition);
 			defineDictionary(kevoreeFactory, chan.getDictionary(), channelInstance);
 			root.addHubs(channelInstance);
@@ -102,8 +141,8 @@ public class KevoreeModelService {
 
 	}
 
-	private void attachPort(final ContainerRoot root, final KevoreeFactory kevoreeFactory, final Channel channelInstance,
-			final Port port) {
+	private void attachPort(final ContainerRoot root, final KevoreeFactory kevoreeFactory,
+			final Channel channelInstance, final Port port) {
 		final MBinding mBinding = kevoreeFactory.createMBinding();
 		mBinding.setPort(port);
 		mBinding.setHub(channelInstance);

@@ -22,13 +22,15 @@ public class Application {
 
 	public static void main(final String[] args) throws FileNotFoundException, IOException {
 
-		final long seed = -3309530520489196191L;
-		// final long seed = initSeed(args);
+		// final long seed = -3309530520489196191L;
+		final long seed = initSeed(args);
 
 		final Random generator = new Random();
 		generator.setSeed(seed);
 
-		final GraphService graphService = new GraphService(generator).withNodes(3).withComponents(6).withChannels(3).withGroups(1);
+		final int n = 4;
+		final GraphService graphService = new GraphService(generator).withNodes(n).withComponents(n * 5)
+				.withChannels((int) (n * 2.5)).withGroups(1);
 
 		final Graph graph = graphService.generate().getGraph();
 
