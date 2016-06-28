@@ -3,12 +3,13 @@ package fr.mleduc.poc.graph.generator.graph;
 /**
  * Created by mleduc on 24/06/16.
  */
-public class Component {
+public class Component extends Instance {
     private final String name;
     private final ComponentTypeDef typeDef;
     private Node node;
 
     public Component(final String name, final ComponentTypeDef typeDef) {
+        super(typeDef.getDefaultDictionary());
         this.name = name;
         this.typeDef = typeDef;
     }

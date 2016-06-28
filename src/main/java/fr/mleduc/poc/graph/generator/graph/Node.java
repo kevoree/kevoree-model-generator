@@ -7,16 +7,16 @@ import java.util.Map;
 /**
  * Created by mleduc on 24/06/16.
  */
-public class Node {
+public class Node extends Instance {
     private final String name;
     private final List<Component> components = new ArrayList<>();
     private final TypeDef typeDef;
-    private final Map<String, String> dictionary;
+    
 
     public Node(final String name, final TypeDef typeDef) {
+        super(typeDef.getDefaultDictionary());
         this.name = name;
         this.typeDef = typeDef;
-        this.dictionary = typeDef.getDefaultDictionary();
     }
 
     public String getName() {
@@ -31,7 +31,5 @@ public class Node {
         return typeDef;
     }
 
-    public Map<String, String> getDictionary() {
-        return dictionary;
-    }
+    
 }
