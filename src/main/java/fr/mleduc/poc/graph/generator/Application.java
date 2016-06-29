@@ -41,7 +41,8 @@ public class Application {
 				.withChannels((int) (n * 2.5)).withGroups(1);
 
 		final List<IOperation> operations = graphService.initialize();
-		final OperationsExecutor operationsExecutor = new OperationsExecutor();
+		System.out.println(operations);
+		/*final OperationsExecutor operationsExecutor = new OperationsExecutor();
 		final Graph graph = operationsExecutor.proceed(new Graph(generator), operations);
 		final List<IOperation> operations2 = graphService.next(graph);
 		final Graph graph2 = operationsExecutor.proceed(graph, operations2);
@@ -60,7 +61,7 @@ public class Application {
 		
 		IOUtils.write(kevs1, new FileOutputStream(new File("model1.kevs")), Charset.defaultCharset());
 		IOUtils.write(kevs2, new FileOutputStream(new File("model2.kevs")), Charset.defaultCharset());
-
+*/
 		/*
 		 * saveAndDisplaysModel(graphService.initialize().getGraph(), "0");
 		 * saveAndDisplaysModel(graphService.nextGeneration().getGraph(), "1");

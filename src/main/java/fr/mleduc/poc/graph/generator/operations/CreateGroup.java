@@ -20,4 +20,9 @@ public class CreateGroup implements IOperation {
 		return this.typeDef;
 	}
 
+	@Override
+	public String toString() {
+		return "CreateGroup [name=" + name + ", typeDef=" + typeDef + "]";
+	}
+
 }

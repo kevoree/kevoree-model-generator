@@ -10,4 +10,9 @@ public class Attach implements IOperation {
 		this.groupName = groupName;
 	}
 
+	@Override
+	public String toString() {
+		return "Attach [nodeName=" + nodeName + ", groupName=" + groupName + "]";
+	}
+
 }

@@ -12,6 +12,8 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import fr.mleduc.poc.graph.generator.graph.Graph;
+import fr.mleduc.poc.graph.generator.graph.instance.Chan;
+import fr.mleduc.poc.graph.generator.graph.instance.Component;
 import fr.mleduc.poc.graph.generator.graph.typedef.TypeDef;
 import fr.mleduc.poc.graph.generator.operations.Attach;
 import fr.mleduc.poc.graph.generator.operations.Bind;
@@ -91,9 +93,14 @@ public class OperationsService {
 			return new CreateChannel(chanId, randomTypeDef, chanDico);
 		}).collect(Collectors.toList());
 
-		final List<Bind> sBind = sComponent.stream().map(component -> {
-			return (Bind) null;
-		}).collect(Collectors.toList());
+		final List<Bind> sBind = sComponent.stream().map(new Function<CreateComponent, Stream<Bind>>() {
+			@Override
+			public Stream<Bind> apply(CreateComponent component) {
+				return component.getTypeDef().getInputs().stream().map(input -> {
+					return randomlyBind(component.getNodeName(), component.getName(), input, sChannels);
+				}).flatMap(Function.identity());
+			}
+		}).flatMap(Function.identity()).collect(Collectors.toList());
 
 		final ArrayList<IOperation> ret = new ArrayList<>();
 		ret.addAll(sGroups);
@@ -103,6 +110,26 @@ public class OperationsService {
 		ret.addAll(sChannels);
 		ret.addAll(sBind);
 		return ret;
+	}
+
+	private Stream<Bind> randomlyBind(final String nodeName, final String componentName, final String port,
+			final List<CreateChannel> channels) {
+		final List<Bind> ret = new ArrayList<>();
+		for (int i = 1;; i++) {
+			final float level = generator.nextFloat();
+			if (level < activationFunction(i)) {
+				final CreateChannel chan = channels.get(generator.nextInt(channels.size()));
+				ret.add(new Bind(nodeName, componentName, port, chan.getName()));
+			} else {
+				break;
+			}
+		}
+		return ret.stream();
+	}
+
+	private float activationFunction(final int j) {
+		final float i = j;
+		return 1.0f / (i * i + 1.0f);
 	}
 
 	public List<IOperation> next(final Graph graph) {

@@ -12,6 +12,11 @@ public class CreateNode implements IOperation {
 		this.typeDef = typeDef;
 	}
 
+	@Override
+	public String toString() {
+		return "CreateNode [name=" + name + ", typeDef=" + typeDef + "]";
+	}
+
 	public String getName() {
 		return name;
 	}
