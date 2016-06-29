@@ -10,16 +10,12 @@ import java.util.Random;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.kevoree.ContainerRoot;
 import org.kevoree.factory.DefaultKevoreeFactory;
 import org.kevoree.pmodeling.api.json.JSONModelSerializer;
 
-import fr.mleduc.poc.graph.generator.graph.Graph;
 import fr.mleduc.poc.graph.generator.operations.IOperation;
-import fr.mleduc.poc.graph.generator.service.OperationsExecutor;
 import fr.mleduc.poc.graph.generator.service.OperationsService;
 import fr.mleduc.poc.graph.generator.service.output.KevPrinterService;
-import fr.mleduc.poc.graph.generator.service.output.KevoreeModelService;
 
 /**
  * Created by mleduc on 24/06/16.
@@ -41,27 +37,34 @@ public class Application {
 				.withChannels((int) (n * 2.5)).withGroups(1);
 
 		final List<IOperation> operations = graphService.initialize();
-		System.out.println(operations);
-		/*final OperationsExecutor operationsExecutor = new OperationsExecutor();
-		final Graph graph = operationsExecutor.proceed(new Graph(generator), operations);
-		final List<IOperation> operations2 = graphService.next(graph);
-		final Graph graph2 = operationsExecutor.proceed(graph, operations2);
 
-		final KevoreeModelService kevoreeModelService = new KevoreeModelService();
-		final ContainerRoot m1 = kevoreeModelService.process(graph);
-		final ContainerRoot m2 = kevoreeModelService.process(graph2);
-		final String json1 = createJSONSerializer.serialize(m1);
-		final String json2 = createJSONSerializer.serialize(m2);
-
-		IOUtils.write(json1, new FileOutputStream(new File("model1.json")), Charset.defaultCharset());
-		IOUtils.write(json2, new FileOutputStream(new File("model2.json")), Charset.defaultCharset());
-		
 		final String kevs1 = new KevPrinterService().process(operations);
-		final String kevs2 = new KevPrinterService().process(operations2);
-		
 		IOUtils.write(kevs1, new FileOutputStream(new File("model1.kevs")), Charset.defaultCharset());
-		IOUtils.write(kevs2, new FileOutputStream(new File("model2.kevs")), Charset.defaultCharset());
-*/
+		/*
+		 * final OperationsExecutor operationsExecutor = new
+		 * OperationsExecutor(); final Graph graph =
+		 * operationsExecutor.proceed(new Graph(generator), operations); final
+		 * List<IOperation> operations2 = graphService.next(graph); final Graph
+		 * graph2 = operationsExecutor.proceed(graph, operations2);
+		 * 
+		 * final KevoreeModelService kevoreeModelService = new
+		 * KevoreeModelService(); final ContainerRoot m1 =
+		 * kevoreeModelService.process(graph); final ContainerRoot m2 =
+		 * kevoreeModelService.process(graph2); final String json1 =
+		 * createJSONSerializer.serialize(m1); final String json2 =
+		 * createJSONSerializer.serialize(m2);
+		 * 
+		 * IOUtils.write(json1, new FileOutputStream(new File("model1.json")),
+		 * Charset.defaultCharset()); IOUtils.write(json2, new
+		 * FileOutputStream(new File("model2.json")), Charset.defaultCharset());
+		 * 
+		 * final String kevs1 = new KevPrinterService().process(operations);
+		 * final String kevs2 = new KevPrinterService().process(operations2);
+		 * 
+		 * IOUtils.write(kevs1, new FileOutputStream(new File("model1.kevs")),
+		 * Charset.defaultCharset()); IOUtils.write(kevs2, new
+		 * FileOutputStream(new File("model2.kevs")), Charset.defaultCharset());
+		 */
 		/*
 		 * saveAndDisplaysModel(graphService.initialize().getGraph(), "0");
 		 * saveAndDisplaysModel(graphService.nextGeneration().getGraph(), "1");

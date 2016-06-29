@@ -16,8 +16,24 @@ public class SetFragment implements IOperation {
 
 	@Override
 	public String toString() {
-		return "SetFragment [groupName=" + groupName + ", key=" + key + ", nodeName=" + nodeName + ", value=" + value
-				+ "]";
+		return "SetFragment [groupName=" + getGroupName() + ", key=" + getKey() + ", nodeName=" + getNodeName()
+				+ ", value=" + getValue() + "]";
+	}
+
+	public String getGroupName() {
+		return groupName;
+	}
+
+	public String getKey() {
+		return key;
+	}
+
+	public String getNodeName() {
+		return nodeName;
+	}
+
+	public String getValue() {
+		return value;
 	}
 
 }

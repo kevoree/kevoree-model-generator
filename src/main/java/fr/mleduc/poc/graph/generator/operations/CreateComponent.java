@@ -8,7 +8,7 @@ public class CreateComponent implements IOperation {
 	private final String nodeName;
 	@Override
 	public String toString() {
-		return "CreateComponent [name=" + name + ", nodeName=" + nodeName + ", typeDef=" + typeDef + "]";
+		return "CreateComponent [name=" + getName() + ", nodeName=" + nodeName + ", typeDef=" + typeDef + "]";
 	}
 
 	private final ComponentTypeDef typeDef;

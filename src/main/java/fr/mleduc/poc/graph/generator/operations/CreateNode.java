@@ -14,11 +14,15 @@ public class CreateNode implements IOperation {
 
 	@Override
 	public String toString() {
-		return "CreateNode [name=" + name + ", typeDef=" + typeDef + "]";
+		return "CreateNode [name=" + name + ", typeDef=" + getTypeDef() + "]";
 	}
 
 	public String getName() {
 		return name;
+	}
+
+	public TypeDef getTypeDef() {
+		return typeDef;
 	}
 
 }

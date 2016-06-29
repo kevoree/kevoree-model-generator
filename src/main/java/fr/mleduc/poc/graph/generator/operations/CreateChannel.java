@@ -12,7 +12,7 @@ public class CreateChannel implements IOperation {
 
 	@Override
 	public String toString() {
-		return "CreateChannel [name=" + name + ", typeDef=" + typeDef + ", dictionary=" + dictionary + "]";
+		return "CreateChannel [name=" + name + ", typeDef=" + getTypeDef() + ", dictionary=" + getDictionary() + "]";
 	}
 
 	public CreateChannel(final String name, final TypeDef typeDef, final Map<String, String> dictionary) {
@@ -23,6 +23,14 @@ public class CreateChannel implements IOperation {
 
 	public String getName() {
 		return name;
+	}
+
+	public TypeDef getTypeDef() {
+		return typeDef;
+	}
+
+	public Map<String, String> getDictionary() {
+		return dictionary;
 	}
 
 }

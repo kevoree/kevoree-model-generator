@@ -12,8 +12,6 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import fr.mleduc.poc.graph.generator.graph.Graph;
-import fr.mleduc.poc.graph.generator.graph.instance.Chan;
-import fr.mleduc.poc.graph.generator.graph.instance.Component;
 import fr.mleduc.poc.graph.generator.graph.typedef.TypeDef;
 import fr.mleduc.poc.graph.generator.operations.Attach;
 import fr.mleduc.poc.graph.generator.operations.Bind;
@@ -22,6 +20,7 @@ import fr.mleduc.poc.graph.generator.operations.CreateComponent;
 import fr.mleduc.poc.graph.generator.operations.CreateGroup;
 import fr.mleduc.poc.graph.generator.operations.CreateNode;
 import fr.mleduc.poc.graph.generator.operations.IOperation;
+import fr.mleduc.poc.graph.generator.operations.Set;
 import fr.mleduc.poc.graph.generator.operations.SetFragment;
 
 public class OperationsService {
@@ -93,9 +92,14 @@ public class OperationsService {
 			return new CreateChannel(chanId, randomTypeDef, chanDico);
 		}).collect(Collectors.toList());
 
+		final List<Set> sConfigureChannels = sChannels.stream().map(chan -> {
+			return chan.getDictionary().entrySet().stream()
+					.map(entry -> new Set(chan.getName(), entry.getKey(), entry.getValue()));
+		}).flatMap(Function.identity()).collect(Collectors.toList());
+
 		final List<Bind> sBind = sComponent.stream().map(new Function<CreateComponent, Stream<Bind>>() {
 			@Override
-			public Stream<Bind> apply(CreateComponent component) {
+			public Stream<Bind> apply(final CreateComponent component) {
 				return component.getTypeDef().getInputs().stream().map(input -> {
 					return randomlyBind(component.getNodeName(), component.getName(), input, sChannels);
 				}).flatMap(Function.identity());
@@ -104,10 +108,12 @@ public class OperationsService {
 
 		final ArrayList<IOperation> ret = new ArrayList<>();
 		ret.addAll(sGroups);
+		ret.add(new Set("group0", "master", "node0"));
 		ret.addAll(sNodes);
 		ret.addAll(sAttach);
 		ret.addAll(sComponent);
 		ret.addAll(sChannels);
+		ret.addAll(sConfigureChannels);
 		ret.addAll(sBind);
 		return ret;
 	}
