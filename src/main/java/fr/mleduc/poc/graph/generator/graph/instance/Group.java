@@ -24,9 +24,9 @@ public class Group extends Instance {
         return name;
     }
 
-    public void addNode(final Node node, Map<String, String> nodeFragment) {
+    public void addNode(final Node node) {
         this.getNodes().add(node);
-        this.fragments.put(node.getName(), nodeFragment);
+        //this.fragments.put(node.getName(), nodeFragment);
     }
 
     public GroupTypeDef getTypeDef() {
@@ -42,6 +42,9 @@ public class Group extends Instance {
     }
 
     public Map<String, String> getNodeFragment(final String node) {
+    	if(!this.fragments.containsKey(node)) {
+    		this.fragments.put(node, new HashMap<>());
+    	}
         return this.fragments.get(node);
     }
 

@@ -100,9 +100,13 @@ public class OperationsService {
 		final List<Bind> sBind = sComponent.stream().map(new Function<CreateComponent, Stream<Bind>>() {
 			@Override
 			public Stream<Bind> apply(final CreateComponent component) {
-				return component.getTypeDef().getInputs().stream().map(input -> {
+				final Stream<Bind> inputs = component.getTypeDef().getInputs().stream().map(input -> {
 					return randomlyBind(component.getNodeName(), component.getName(), input, sChannels);
 				}).flatMap(Function.identity());
+				final Stream<Bind> outputs = component.getTypeDef().getOutputs().stream().map(input -> {
+					return randomlyBind(component.getNodeName(), component.getName(), input, sChannels);
+				}).flatMap(Function.identity());
+				return Stream.concat(inputs, outputs);
 			}
 		}).flatMap(Function.identity()).collect(Collectors.toList());
 
