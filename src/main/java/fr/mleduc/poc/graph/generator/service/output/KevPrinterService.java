@@ -12,17 +12,19 @@ import fr.mleduc.poc.graph.generator.graph.Graph;
 import fr.mleduc.poc.graph.generator.graph.instance.Chan;
 import fr.mleduc.poc.graph.generator.graph.instance.Component;
 import fr.mleduc.poc.graph.generator.graph.instance.Node;
+import fr.mleduc.poc.graph.generator.operations.IOperation;
 
 /**
  * Created by mleduc on 24/06/16.
  */
 public class KevPrinterService {
-	public String process(final Graph graph) {
+	public String process(final List<IOperation> operations) {
 
-		final Stream<String> nodesStream = graph.getNodes().stream()
+		/*
+		final Stream<String> nodesStream = operations.getNodes().stream()
 				.map(component -> "add " + component.getName() + ": " + component.getTypeDef().getName());
 
-		final Stream<String> groupsStream = graph.getGroups().stream().map(group -> {
+		final Stream<String> groupsStream = operations.getGroups().stream().map(group -> {
 			final List<String> lst = new ArrayList<>();
 			lst.add("add " + group.getName() + ": " + group.getTypeDef().getName());
 
@@ -42,10 +44,10 @@ public class KevPrinterService {
 			return Stream.of(lst.stream(), attachs, sets).flatMap(Function.identity());
 		}).flatMap(Function.identity());
 
-		final Stream<String> componentsStream = graph.getComponents().stream().map(component -> "add "
+		final Stream<String> componentsStream = operations.getComponents().stream().map(component -> "add "
 				+ component.getNode().getName() + "." + component.getName() + ": " + component.getTypeDef().getName());
 
-		final Stream<String> chansStream = graph.getChans().stream().map(chan -> {
+		final Stream<String> chansStream = operations.getChans().stream().map(chan -> {
 			final List<String> lst = new ArrayList<>();
 			lst.add("add " + chan.getName() + ": WSChan");
 			lst.addAll(chan.getDictionary().entrySet().stream()
@@ -54,7 +56,7 @@ public class KevPrinterService {
 			return lst.stream();
 		}).flatMap(Function.identity());
 
-		final Stream<String> bindsStream = graph.getBinds().stream().map(bind -> {
+		final Stream<String> bindsStream = operations.getBinds().stream().map(bind -> {
 			final Component component = bind.getComponent();
 			final Node node = component.getNode();
 			final String port = bind.getPort();
@@ -66,5 +68,8 @@ public class KevPrinterService {
 		final List<String> res = Stream.of(nodesStream, groupsStream, componentsStream, chansStream, bindsStream)
 				.flatMap(Function.identity()).collect(Collectors.toList());
 		return StringUtils.join(res, "\n");
+		*/
+		
+		return null;
 	}
 }
