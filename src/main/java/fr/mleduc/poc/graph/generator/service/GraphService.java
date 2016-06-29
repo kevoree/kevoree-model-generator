@@ -46,7 +46,7 @@ public class GraphService {
 		return this;
 	}
 
-	public GraphService generate() {
+	public GraphService initialize() {
 
 		IntStream.range(0, groups)
 				.forEach(value -> graph.addGroup(new Group("group" + value, typeDefService.getRandomGroup())));
@@ -122,6 +122,27 @@ public class GraphService {
 	public GraphService withGroups(final int groups) {
 		this.groups = groups;
 		return this;
+	}
+
+	public GraphService nextGeneration() {
+		// operate a serie of transformations on the current graph.
+		// 1 - randomly removing nodes / same logic but by adding nodes
+		// 2 - randomly removing components / same logic but by adding components
+		// 3 - randomly updating dictionaries 
+		// 4 - randomly removing bindings / same logic but by adding bindings
+		
+		//graph.getRandomComponent()
+		
+		/**
+		 * Conception:
+		 * The transformation of the graph can either be seen as a serie of modifications of the graph
+		 * 
+		 *  Or the whole graph can be seen as the derivate of a serie of consistents operations on a graph.
+		 *  
+		 *  The second solution allows us to generate updating kevscript but we have to update much for of the service logic to do so. 
+		 */
+		
+		return null;
 	}
 
 }

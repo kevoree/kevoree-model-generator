@@ -34,12 +34,14 @@ public class Application {
 		final GraphService graphService = new GraphService(generator).withNodes(n).withComponents(n * 5)
 				.withChannels((int) (n * 2.5)).withGroups(1);
 
-		final Graph graph = graphService.generate().getGraph();
+		saveAndDisplaysModel(graphService.initialize().getGraph(), "0");
+		saveAndDisplaysModel(graphService.nextGeneration().getGraph(), "1");
+	}
 
+	private static void saveAndDisplaysModel(final Graph graph, String n) throws IOException, FileNotFoundException {
 		final ContainerRoot model = new KevoreeModelService().process(graph);
-
 		IOUtils.write(new DefaultKevoreeFactory().createJSONSerializer().serialize(model),
-				new FileOutputStream(new File("model.json")), Charset.defaultCharset());
+				new FileOutputStream(new File("model" + n + ".json")), Charset.defaultCharset());
 		System.out.println("Model saved in model.json");
 
 		final String kevs = new KevPrinterService().process(graph);
