@@ -42,13 +42,28 @@ public class Application {
 
 		final List<IOperation> operations = graphService.initialize();
 
-		final String kevs1 = new KevPrinterService().process(operations);
-		IOUtils.write(kevs1, new FileOutputStream(new File("model1.kevs")), Charset.defaultCharset());
+		final Graph graph = saveAll(operations, 0, null);
 
-		final Graph graph = new GraphService().process(operations);
+		final List<IOperation> operations2 = graphService.next(graph);
+		saveAll(operations2, 1, graph);
+	}
+
+	private static Graph saveAll(final List<IOperation> operations, final int step, Graph graph0)
+			throws IOException, FileNotFoundException {
+		final String kevs1 = new KevPrinterService().process(operations);
+		IOUtils.write(kevs1, new FileOutputStream(new File("model" + step + ".kevs")), Charset.defaultCharset());
+
+		GraphService graphService;
+		if (graph0 != null) {
+			graphService = new GraphService(graph0);
+		} else {
+			graphService = new GraphService();
+		}
+		final Graph graph = graphService.process(operations);
 		final ContainerRoot model = new KevoreeModelService().process(graph);
 		final String jsonModel = jsonSerializer.serialize(model);
-		IOUtils.write(jsonModel, new FileOutputStream(new File("model1.json")), Charset.defaultCharset());
+		IOUtils.write(jsonModel, new FileOutputStream(new File("model" + step + ".json")), Charset.defaultCharset());
+		return graph;
 	}
 
 	private static long initSeed(final String[] args) {

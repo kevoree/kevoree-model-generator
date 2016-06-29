@@ -1,8 +1,5 @@
 package fr.mleduc.poc.graph.generator.graph.instance;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import fr.mleduc.poc.graph.generator.graph.typedef.TypeDef;
 
 /**
@@ -10,7 +7,6 @@ import fr.mleduc.poc.graph.generator.graph.typedef.TypeDef;
  */
 public class Node extends Instance {
 	private final String name;
-	private final List<Component> components = new ArrayList<>();
 	private final TypeDef typeDef;
 	private Group group;
 
@@ -22,10 +18,6 @@ public class Node extends Instance {
 
 	public String getName() {
 		return name;
-	}
-
-	public void addComponent(final Component component) {
-		this.components.add(component);
 	}
 
 	public TypeDef getTypeDef() {

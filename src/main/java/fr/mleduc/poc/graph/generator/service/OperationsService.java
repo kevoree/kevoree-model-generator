@@ -1,6 +1,7 @@
 package fr.mleduc.poc.graph.generator.service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +21,7 @@ import fr.mleduc.poc.graph.generator.operations.CreateComponent;
 import fr.mleduc.poc.graph.generator.operations.CreateGroup;
 import fr.mleduc.poc.graph.generator.operations.CreateNode;
 import fr.mleduc.poc.graph.generator.operations.IOperation;
+import fr.mleduc.poc.graph.generator.operations.RemoveComponent;
 import fr.mleduc.poc.graph.generator.operations.Set;
 import fr.mleduc.poc.graph.generator.operations.SetFragment;
 
@@ -143,8 +145,10 @@ public class OperationsService {
 	}
 
 	public List<IOperation> next(final Graph graph) {
-		// TODO Auto-generated method stub
-		return null;
+		Collections.shuffle(graph.getComponents(), generator);
+		return graph.getComponents().stream().limit(10)
+				.map(component -> new RemoveComponent(component.getNode().getName(), component.getName()))
+				.collect(Collectors.toList());
 	}
 
 }

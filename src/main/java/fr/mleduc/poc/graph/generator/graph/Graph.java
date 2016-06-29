@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import fr.mleduc.poc.graph.generator.graph.instance.Chan;
@@ -18,7 +20,7 @@ import fr.mleduc.poc.graph.generator.graph.instance.Node;
 public class Graph {
 
 	private final List<Node> nodes = new ArrayList<>();
-	private final List<Component> components = new ArrayList<>();
+	private List<Component> components = new ArrayList<>();
 	private final List<Chan> chans = new ArrayList<>();
 	private final List<Bind> binds = new ArrayList<>();
 	private final List<Group> groups = new ArrayList<>();
@@ -44,7 +46,6 @@ public class Graph {
 	}
 
 	public void addComponentToNode(final Node node, final Component component) {
-		node.addComponent(component);
 		component.setNode(node);
 		this.components.add(component);
 	}
@@ -104,7 +105,20 @@ public class Graph {
 			comp = Optional.empty();
 		}
 		final Optional<Chan> chan = Optional.ofNullable(this.getChan(instance));
-		return Stream.of(node, group, comp, chan).filter(Optional::isPresent).map(Optional::get).findFirst().orElse(null);
+		return Stream.of(node, group, comp, chan).filter(Optional::isPresent).map(Optional::get).findFirst()
+				.orElse(null);
+
+	}
+
+	public void removeComponent(String nodeName, String name) {
+		List<Component> collect = this.components.stream().filter(new Predicate<Component>() {
+			@Override
+			public boolean test(Component component) {
+				return !Objects.equals(component.getNode().getName(), nodeName) || !Objects.equals(component.getName(), name);
+			}
+		}).collect(Collectors.toList());
+		System.out.println(this.components.size());
+		this.components = collect;
 
 	}
 }

@@ -15,6 +15,7 @@ import fr.mleduc.poc.graph.generator.operations.CreateComponent;
 import fr.mleduc.poc.graph.generator.operations.CreateGroup;
 import fr.mleduc.poc.graph.generator.operations.CreateNode;
 import fr.mleduc.poc.graph.generator.operations.IOperation;
+import fr.mleduc.poc.graph.generator.operations.RemoveComponent;
 import fr.mleduc.poc.graph.generator.operations.Set;
 import fr.mleduc.poc.graph.generator.operations.SetFragment;
 import fr.mleduc.poc.graph.generator.service.output.IOperationExecutor;
@@ -96,6 +97,8 @@ public class GraphService implements IOperationExecutor<Graph> {
 				bind((Bind) opp);
 			} else if (opp instanceof Set) {
 				set((Set) opp);
+			} else if (opp instanceof RemoveComponent) {
+				removeComponent((RemoveComponent) opp);
 			} else {
 
 			}
@@ -114,6 +117,12 @@ public class GraphService implements IOperationExecutor<Graph> {
 	public Graph setFragment(final SetFragment set) {
 		final Group group = this.graph.getGroup(set.getGroupName());
 		group.getNodeFragment(set.getNodeName()).put(set.getKey(), set.getValue());
+		return this.graph;
+	}
+
+	@Override
+	public Graph removeComponent(final RemoveComponent component) {
+		this.graph.removeComponent(component.getNodeName(), component.getName());
 		return this.graph;
 	}
 

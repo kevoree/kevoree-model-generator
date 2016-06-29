@@ -12,6 +12,7 @@ import fr.mleduc.poc.graph.generator.operations.CreateComponent;
 import fr.mleduc.poc.graph.generator.operations.CreateGroup;
 import fr.mleduc.poc.graph.generator.operations.CreateNode;
 import fr.mleduc.poc.graph.generator.operations.IOperation;
+import fr.mleduc.poc.graph.generator.operations.RemoveComponent;
 import fr.mleduc.poc.graph.generator.operations.Set;
 import fr.mleduc.poc.graph.generator.operations.SetFragment;
 
@@ -47,6 +48,8 @@ public class KevPrinterService implements IOperationExecutor<String> {
 				ret = bind((Bind) opp);
 			} else if (opp instanceof Set) {
 				ret = set((Set) opp);
+			} else if (opp instanceof RemoveComponent) {
+				ret = removeComponent((RemoveComponent) opp);
 			} else {
 				ret = "// TODO " + opp;
 			}
@@ -148,5 +151,10 @@ public class KevPrinterService implements IOperationExecutor<String> {
 	public String attach(Attach opp) {
 
 		return "attach " + opp.getNodeName() + " " + opp.getGroupName();
+	}
+
+	@Override
+	public String removeComponent(RemoveComponent commponent) {
+		return "remove " + commponent.getNodeName() + "." + commponent.getName();
 	}
 }

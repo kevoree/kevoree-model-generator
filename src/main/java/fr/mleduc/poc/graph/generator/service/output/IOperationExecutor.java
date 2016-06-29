@@ -9,6 +9,7 @@ import fr.mleduc.poc.graph.generator.operations.CreateComponent;
 import fr.mleduc.poc.graph.generator.operations.CreateGroup;
 import fr.mleduc.poc.graph.generator.operations.CreateNode;
 import fr.mleduc.poc.graph.generator.operations.IOperation;
+import fr.mleduc.poc.graph.generator.operations.RemoveComponent;
 import fr.mleduc.poc.graph.generator.operations.Set;
 import fr.mleduc.poc.graph.generator.operations.SetFragment;
 
@@ -28,8 +29,10 @@ public interface IOperationExecutor<T> {
 
 	T createNode(CreateNode node);
 
-	T createGroup(CreateGroup opp);
+	T createGroup(CreateGroup group);
 
-	T attach(Attach opp);
+	T attach(Attach attach);
+	
+	T removeComponent(RemoveComponent component);
 
 }
